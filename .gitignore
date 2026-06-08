@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Env & secrets
+.env
+*.local
+
+# OS
+.DS_Store
+
+# Keep trained models tracked (they are deliverables):
+# backend/models/*.pkl  -> intentionally NOT ignored

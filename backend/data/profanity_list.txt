@@ -1,0 +1,19 @@
+# KWASU abuse-detection wordlist (starter)
+# One entry per line. Lines beginning with # are ignored.
+# Replace/extend this with a full open-source list, e.g. LDNOOBW
+# "List of Dirty, Naughty, Obscene and Otherwise Bad Words":
+#   https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words
+# Download en.txt from that repo and append its contents below.
+#
+# This starter list is intentionally small and mild so the app runs
+# out of the box. The real list should be sourced as above.
+idiot
+stupid
+fool
+nonsense
+rubbish
+useless
+trash
+dumb
+moron
+shutup

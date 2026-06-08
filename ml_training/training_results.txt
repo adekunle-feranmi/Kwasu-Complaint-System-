@@ -1,0 +1,51 @@
+================================================================
+KWASU Complaint Classifier — Training Results
+================================================================
+Raw rows in dataset.csv          : 267
+Rows after dedup + empty removal : 218
+Usable rows after preprocessing  : 218
+
+Class distribution (after cleaning):
+   Administrative   160
+   Academic         58
+
+Train/test split: 185 train / 33 test (85/15, stratified)
+
+TF-IDF vocabulary size           : 2064
+chi-square features retained (k) : 800
+(Brief specifies 500-1000; corpus vocabulary is smaller, so k is capped to the available features.)
+
+Naive Bayes
+   best alpha            : 0.01
+   CV accuracy (train)   : 0.8865
+   test accuracy         : 0.8485
+   test precision (wtd)  : 0.8468
+   test recall (wtd)     : 0.8485
+   test F1 (wtd)         : 0.8378
+
+SVM (LinearSVC, class_weight=balanced)
+   best C                : 0.1
+   CV accuracy (train)   : 0.8541
+   test accuracy         : 0.8788
+   test precision (wtd)  : 0.8788
+   test recall (wtd)     : 0.8788
+   test F1 (wtd)         : 0.8788
+
+================================================================
+WINNER (highest weighted F1): SVM
+================================================================
+
+Confusion matrix (winner, on test set):
+   labels: Academic, Administrative
+   Academic         [7, 2]
+   Administrative   [2, 22]
+
+NOTE ON INTERPRETATION:
+  The majority class accounts for 73.4% of the data, so a
+  trivial classifier that always predicts the majority class would score
+  ~73.4% accuracy. Read precision/recall/F1 per class, not
+  headline accuracy. The dataset contains only 2 categories (Academic,
+  Administrative); Facility and Finance from the original brief are not
+  present and cannot be predicted.
+
+Saved: vectorizer.pkl, selector.pkl, classifier.pkl -> ../backend/models
