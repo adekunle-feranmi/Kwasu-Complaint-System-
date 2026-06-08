@@ -5,7 +5,5 @@ PyMySQL==1.1.1
 PyJWT==2.9.0
 Werkzeug==3.0.3
 scikit-learn==1.5.1
-pandas==2.2.2
-numpy==1.26.4
 gunicorn==22.0.0
 python-dotenv==1.0.1
