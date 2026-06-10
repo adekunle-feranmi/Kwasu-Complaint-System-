@@ -175,3 +175,42 @@ textarea { resize: vertical; min-height: 110px; }
   .nav-item { white-space: nowrap; width: auto; }
   .content { padding: 18px; }
 }
+
+/* ---------- v2 feedback: header menu, greeting, admin theme ---------- */
+.app-header .welcome { font-weight: 600; font-size: 15px; }
+
+.menu-wrap { position: relative; }
+.hamburger {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.3);
+  width: 42px; height: 38px; border-radius: 9px; cursor: pointer;
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+  padding: 0;
+}
+.hamburger span { display: block; width: 20px; height: 2px; background: #fff; border-radius: 2px; }
+.hamburger:hover { background: rgba(255,255,255,.22); }
+
+.menu-dropdown {
+  position: absolute; right: 0; top: 46px; background: #fff; color: var(--text);
+  border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow);
+  min-width: 210px; padding: 8px; z-index: 100;
+}
+.menu-dropdown .menu-email { font-size: 13px; font-weight: 600; padding: 6px 10px 0; word-break: break-all; }
+.menu-dropdown .menu-role { font-size: 12px; color: var(--muted); padding: 0 10px 8px; text-transform: capitalize; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+.menu-item {
+  width: 100%; text-align: left; background: none; border: none; cursor: pointer;
+  padding: 10px 10px; border-radius: 7px; font-size: 14px; font-family: inherit; color: var(--danger);
+}
+.menu-item:hover { background: var(--danger-bg); }
+
+/* more breathing room on dropdown selects */
+select { padding: 11px 16px; }
+.btn-row select { padding-right: 32px; }
+
+/* distinct admin auth screen (gold) */
+.admin-wrap { background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%); }
+.admin-card { border-top: 5px solid var(--kwasu-gold); }
+.admin-crest {
+  background: var(--kwasu-gold); color: #1a1a1a; border-color: #1a1a1a;
+  font-size: 14px; font-weight: 800; letter-spacing: 1px;
+}
+.admin-card h1 { color: var(--kwasu-green-dark); }

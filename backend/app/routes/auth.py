@@ -82,8 +82,34 @@ def login():
     else:
         user = User.query.filter_by(matric_number=identifier).first()
 
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({"error": "invalid credentials"}), 401
+    # Distinguish "no account" from "wrong password" for a clearer message.
+    if not user:
+        return jsonify({"error": "no account found with those details"}), 404
+    if user.role == "admin":
+        return jsonify({"error": "please use the admin sign-in page"}), 403
+    if not check_password_hash(user.password_hash, password):
+        return jsonify({"error": "incorrect password"}), 401
+
+    return jsonify({"token": make_token(user), "user": _user_json(user)})
+
+
+@auth_bp.route("/login-admin", methods=["POST"])
+def login_admin():
+    """Admin login requires email + password + the admin code every time."""
+    data = request.get_json(force=True) or {}
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password") or ""
+    code = data.get("admin_code") or ""
+
+    required = current_app.config.get("ADMIN_REG_CODE", "")
+    if not required or code != required:
+        return jsonify({"error": "invalid admin code"}), 403
+
+    user = User.query.filter_by(email=email, role="admin").first()
+    if not user:
+        return jsonify({"error": "no admin account found with that email"}), 404
+    if not check_password_hash(user.password_hash, password):
+        return jsonify({"error": "incorrect password"}), 401
 
     return jsonify({"token": make_token(user), "user": _user_json(user)})
 
@@ -98,7 +124,15 @@ def me():
 @login_required
 def upsert_profile():
     """Create or edit profile. Any edit resets status to 'pending'.
-    A banned student cannot resubmit."""
+    A banned student cannot resubmit.
+
+    Accepts JSON with an optional base64 'id_image' (data URL or raw base64).
+    The image is held only while the profile is pending and is cleared by the
+    admin's approve/reject decision. OCR cross-checks the typed matric number
+    against the ID."""
+    import base64
+    from ..ml.id_ocr import check_id_matric
+
     user = g.current_user
     if user.role != "student":
         return jsonify({"error": "students only"}), 403
@@ -106,11 +140,38 @@ def upsert_profile():
     data = request.get_json(force=True) or {}
     full_name = (data.get("full_name") or "").strip()
     if not full_name:
-        return jsonify({"error": "full_name required"}), 400
+        return jsonify({"error": "full name is required"}), 400
+
+    matric = (data.get("matric_number") or user.matric_number or "").strip()
 
     profile = user.profile
     if profile and profile.verification_status == "banned":
         return jsonify({"error": "this account is banned and cannot resubmit"}), 403
+
+    # ID image is required at verification.
+    id_image_b64 = data.get("id_image") or ""
+    image_bytes = None
+    image_mime = None
+    if id_image_b64:
+        # Accept data URLs like "data:image/png;base64,...."
+        if id_image_b64.startswith("data:"):
+            try:
+                header, b64 = id_image_b64.split(",", 1)
+                image_mime = header.split(";")[0].replace("data:", "") or "image/jpeg"
+                image_bytes = base64.b64decode(b64)
+            except Exception:
+                return jsonify({"error": "could not read the ID image"}), 400
+        else:
+            try:
+                image_bytes = base64.b64decode(id_image_b64)
+                image_mime = "image/jpeg"
+            except Exception:
+                return jsonify({"error": "could not read the ID image"}), 400
+
+    # On a brand-new profile (or one without a stored image yet) the ID is required.
+    has_existing_image = bool(profile and profile.id_image)
+    if not image_bytes and not has_existing_image:
+        return jsonify({"error": "an ID card image is required for verification"}), 400
 
     if not profile:
         profile = Profile(user_id=user.id, full_name=full_name)
@@ -118,11 +179,18 @@ def upsert_profile():
     else:
         profile.full_name = full_name
 
-    profile.matric_number = (data.get("matric_number") or user.matric_number or "").strip()
+    profile.matric_number = matric
     profile.department = (data.get("department") or "").strip()
     profile.level = (data.get("level") or "").strip()
     profile.verification_status = "pending"      # every edit re-enters the queue
     profile.reject_reason = None
+
+    if image_bytes:
+        profile.id_image = image_bytes
+        profile.id_image_mime = image_mime
+        match, raw = check_id_matric(image_bytes, matric)
+        profile.ocr_match = match
+        profile.ocr_matric_text = raw
 
     db.session.commit()
     _log(user.id, "profile_submitted", full_name)
@@ -157,4 +225,6 @@ def _profile_json(p):
         "department": p.department, "level": p.level,
         "verification_status": p.verification_status,
         "reject_reason": p.reject_reason,
+        "ocr_match": p.ocr_match,
+        "has_id_image": bool(p.id_image),
     }

@@ -4,6 +4,7 @@ import { CategoryBadge, StatusBadge } from "../common/UI";
 
 export default function ComplaintDetail({ c, onChange }) {
   const [response, setResponse] = useState("");
+  const [comment, setComment] = useState("");
   const [busy, setBusy] = useState(false);
 
   const run = async (fn) => { setBusy(true); try { await fn(); onChange(); } finally { setBusy(false); } };
@@ -52,6 +53,25 @@ export default function ComplaintDetail({ c, onChange }) {
           onClick={() => run(async () => { await api.respond(c.id, response.trim()); setResponse(""); })}
         >
           Send
+        </button>
+      </div>
+
+      {c.comments && c.comments.map((cm) => (
+        <div className="comment" key={cm.id}><strong>{cm.author} (admin):</strong> {cm.text}</div>
+      ))}
+      <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+        <input
+          style={{ marginBottom: 0 }}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Add an admin comment…"
+        />
+        <button
+          className="btn sm ghost"
+          disabled={busy || !comment.trim()}
+          onClick={() => run(async () => { await api.addAdminComment(c.id, comment.trim()); setComment(""); })}
+        >
+          Comment
         </button>
       </div>
     </div>

@@ -4,7 +4,7 @@ from .. import db
 from ..models import Complaint, Category, AbuseFlag, Comment, ActivityLog
 from ..ml.abuse_detector import detect_abuse
 from ..ml.predictor import classify
-from ..utils.helpers import login_required, verified_student_required
+from ..utils.helpers import login_required, verified_student_required, admin_required
 
 complaints_bp = Blueprint("complaints", __name__)
 
@@ -70,7 +70,7 @@ def mine():
 
 
 @complaints_bp.route("/<int:cid>/comments", methods=["POST"])
-@verified_student_required
+@admin_required
 def add_comment(cid):
     c = Complaint.query.get_or_404(cid)
     if not c.is_published:

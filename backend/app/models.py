@@ -28,6 +28,12 @@ class Profile(db.Model):
         db.Enum("pending", "verified", "rejected", "banned"),
         default="pending", nullable=False)
     reject_reason = db.Column(db.Text)
+    # ID image held only while pending; cleared on admin decision.
+    id_image = db.Column(db.LargeBinary(length=(2**24 - 1)))   # MEDIUMBLOB
+    id_image_mime = db.Column(db.String(64))
+    # OCR cross-check of typed matric vs matric read from the ID image.
+    ocr_matric_text = db.Column(db.String(255))
+    ocr_match = db.Column(db.String(20))   # 'match' | 'mismatch' | 'unreadable' | 'unavailable'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

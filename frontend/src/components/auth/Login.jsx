@@ -50,7 +50,7 @@ export default function Login({ onSwitch }) {
         <div className="auth-toggle">
           New student? <a onClick={() => onSwitch("register")} style={{ cursor: "pointer" }}>Create an account</a>
           <br />
-          <a onClick={() => onSwitch("admin")} style={{ cursor: "pointer", fontSize: 13 }}>Admin registration</a>
+          <a onClick={() => onSwitch("admin")} style={{ cursor: "pointer", fontSize: 13 }}>Admin sign in</a>
         </div>
       </div>
     </div>

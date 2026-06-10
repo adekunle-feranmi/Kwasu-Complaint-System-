@@ -28,12 +28,26 @@ def pending_profiles():
     return jsonify({"profiles": [_profile_json(p) for p in items]})
 
 
+@admin_bp.route("/profiles/<int:pid>/id-image", methods=["GET"])
+@admin_required
+def profile_id_image(pid):
+    """Serve the pending ID image for admin review."""
+    from flask import Response
+    p = Profile.query.get_or_404(pid)
+    if not p.id_image:
+        return jsonify({"error": "no ID image on file"}), 404
+    return Response(p.id_image, mimetype=p.id_image_mime or "image/jpeg")
+
+
 @admin_bp.route("/profiles/<int:pid>/approve", methods=["POST"])
 @admin_required
 def approve_profile(pid):
     p = Profile.query.get_or_404(pid)
     p.verification_status = "verified"
     p.reject_reason = None
+    # ID image is no longer needed once a decision is made — clear it.
+    p.id_image = None
+    p.id_image_mime = None
     _notify(p.user_id, "Your profile has been approved. You can now submit "
                        "and comment on complaints.")
     _log("profile_approved", str(pid))
@@ -49,6 +63,9 @@ def reject_profile(pid):
     p = Profile.query.get_or_404(pid)
     p.verification_status = "rejected"
     p.reject_reason = reason
+    # Clear the ID image on decision.
+    p.id_image = None
+    p.id_image_mime = None
     _notify(p.user_id, f"Your profile was rejected: {reason} "
                        f"You may edit and resubmit.")
     _log("profile_rejected", f"{pid}: {reason}")
@@ -61,6 +78,8 @@ def reject_profile(pid):
 def ban_profile(pid):
     p = Profile.query.get_or_404(pid)
     p.verification_status = "banned"
+    p.id_image = None
+    p.id_image_mime = None
     _notify(p.user_id, "Your account has been banned. You can no longer "
                        "submit complaints.")
     _log("profile_banned", str(pid))
@@ -218,6 +237,9 @@ def _profile_json(p):
         "department": p.department, "level": p.level,
         "verification_status": p.verification_status,
         "reject_reason": p.reject_reason,
+        "ocr_match": p.ocr_match,
+        "ocr_matric_text": p.ocr_matric_text,
+        "has_id_image": bool(p.id_image),
     }
 
 
@@ -230,6 +252,12 @@ def _complaint_json(c, with_flag=False):
         "response": res, "created_at": c.created_at.isoformat(),
         "author": (c.user.profile.full_name
                    if c.user and c.user.profile else "Student"),
+        "comments": [
+            {"id": cm.id, "text": cm.comment_text,
+             "author": (cm.user.profile.full_name
+                        if cm.user and cm.user.profile else "Admin")}
+            for cm in c.comments
+        ],
     }
     if with_flag:
         flag = AbuseFlag.query.filter_by(complaint_id=c.id).first()

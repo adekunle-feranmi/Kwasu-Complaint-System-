@@ -1,11 +1,20 @@
 // Central API client. Reads base URL from Vite env (VITE_API_URL).
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-function getToken() {
-  return window.__kwasu_token || null;
+const TOKEN_KEY = "kwasu_token";
+
+export function getStoredToken() {
+  try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
 }
 export function setToken(t) {
   window.__kwasu_token = t;
+  try {
+    if (t) localStorage.setItem(TOKEN_KEY, t);
+    else localStorage.removeItem(TOKEN_KEY);
+  } catch { /* storage unavailable */ }
+}
+function getToken() {
+  return window.__kwasu_token || getStoredToken();
 }
 
 async function request(path, { method = "GET", body, auth = true } = {}) {
@@ -32,6 +41,7 @@ export const api = {
   registerStudent: (b) => request("/auth/register", { method: "POST", body: b, auth: false }),
   registerAdmin: (b) => request("/auth/register-admin", { method: "POST", body: b, auth: false }),
   login: (b) => request("/auth/login", { method: "POST", body: b, auth: false }),
+  loginAdmin: (b) => request("/auth/login-admin", { method: "POST", body: b, auth: false }),
   me: () => request("/auth/me"),
   saveProfile: (b) => request("/auth/profile", { method: "POST", body: b }),
   notifications: () => request("/auth/notifications"),
@@ -47,11 +57,13 @@ export const api = {
   approveProfile: (pid) => request(`/admin/profiles/${pid}/approve`, { method: "POST" }),
   rejectProfile: (pid, reason) => request(`/admin/profiles/${pid}/reject`, { method: "POST", body: { reason } }),
   banProfile: (pid) => request(`/admin/profiles/${pid}/ban`, { method: "POST" }),
+  idImageUrl: (pid) => `${BASE}/admin/profiles/${pid}/id-image`,
   adminComplaints: () => request("/admin/complaints"),
   flaggedComplaints: () => request("/admin/complaints/flagged"),
   changeCategory: (cid, category) => request(`/admin/complaints/${cid}/category`, { method: "POST", body: { category } }),
   changeStatus: (cid, status) => request(`/admin/complaints/${cid}/status`, { method: "POST", body: { status } }),
   respond: (cid, response) => request(`/admin/complaints/${cid}/respond`, { method: "POST", body: { response } }),
+  addAdminComment: (cid, text) => request(`/complaints/${cid}/comments`, { method: "POST", body: { text } }),
   clearFlag: (cid) => request(`/admin/complaints/${cid}/clear-flag`, { method: "POST" }),
   confirmFlag: (cid) => request(`/admin/complaints/${cid}/confirm-flag`, { method: "POST" }),
   stats: () => request("/admin/stats"),
