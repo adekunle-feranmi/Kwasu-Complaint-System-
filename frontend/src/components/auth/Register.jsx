@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { LogoCrest } from "../common/UI";
 
 export default function Register({ onSwitch }) {
   const { registerStudent } = useAuth();
@@ -27,7 +28,7 @@ export default function Register({ onSwitch }) {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <div className="crest">KW</div>
+        <LogoCrest fallback="KW" />
         <h1>Create student account</h1>
         <p className="sub">You'll complete your profile after signing up</p>
 

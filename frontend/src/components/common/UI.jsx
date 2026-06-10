@@ -31,6 +31,25 @@ function Logo({ size = 36 }) {
   return <span className="logo">KW</span>;
 }
 
+// Larger logo for the auth screens (login / register / admin).
+// Falls back to the given text inside the styled crest if the image is missing.
+export function LogoCrest({ fallback = "KW", className = "crest" }) {
+  const [ok, setOk] = useState(true);
+  if (ok) {
+    return (
+      <div style={{ textAlign: "center", marginBottom: 16 }}>
+        <img
+          src="/kwasu-logo.png"
+          alt="KWASU"
+          style={{ width: 76, height: 76, objectFit: "contain" }}
+          onError={() => setOk(false)}
+        />
+      </div>
+    );
+  }
+  return <div className={className}>{fallback}</div>;
+}
+
 // Truncate an email like adekunleferanmi080@gmail.com -> adekunlefe…@gmail.com
 function shortEmail(email) {
   if (!email) return "";

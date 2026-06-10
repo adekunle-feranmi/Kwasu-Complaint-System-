@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { LogoCrest } from "../common/UI";
 
 export default function Login({ onSwitch }) {
   const { login } = useAuth();
@@ -22,7 +23,7 @@ export default function Login({ onSwitch }) {
   return (
     <div className="auth-wrap">
       <div className="auth-card">
-        <div className="crest">KW</div>
+        <LogoCrest fallback="KW" />
         <h1>Welcome back</h1>
         <p className="sub">KWASU Complaint Management System</p>
 

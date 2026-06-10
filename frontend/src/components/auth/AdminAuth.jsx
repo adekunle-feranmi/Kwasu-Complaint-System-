@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { LogoCrest } from "../common/UI";
 
 export default function AdminAuth({ onSwitch }) {
   const { loginAdmin, registerAdmin } = useAuth();
@@ -27,7 +28,7 @@ export default function AdminAuth({ onSwitch }) {
   return (
     <div className="auth-wrap admin-wrap">
       <div className="auth-card admin-card">
-        <div className="crest admin-crest">ADMIN</div>
+        <LogoCrest fallback="ADMIN" className="crest admin-crest" />
         <h1>Administrator {mode === "login" ? "Sign In" : "Sign Up"}</h1>
         <p className="sub">Staff access · KWASU Complaint Management System</p>
 
