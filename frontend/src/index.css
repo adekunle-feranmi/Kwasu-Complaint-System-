@@ -214,3 +214,21 @@ select { padding: 11px 16px; }
   font-size: 14px; font-weight: 800; letter-spacing: 1px;
 }
 .admin-card h1 { color: var(--kwasu-green-dark); }
+/* show/hide password field */
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 64px; }   /* room for the toggle */
+.pw-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: -8px;                 /* align against input's 16px bottom margin */
+  background: none;
+  border: none;
+  color: var(--kwasu-green);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+.pw-toggle:hover { text-decoration: underline; }
