@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { LogoCrest } from "../common/UI";
+import PasswordInput from "./PasswordInput";
 
 export default function Register({ onSwitch }) {
   const { registerStudent } = useAuth();
@@ -41,7 +42,11 @@ export default function Register({ onSwitch }) {
         <input value={form.matric_number} onChange={set("matric_number")} placeholder="22/47CS/2248" />
 
         <label>Password</label>
-        <input type="password" value={form.password} onChange={set("password")} placeholder="at least 6 characters" />
+        <PasswordInput
+          value={form.password}
+          onChange={set("password")}
+          placeholder="at least 6 characters"
+        />
 
         <button className="btn" onClick={submit} disabled={busy}>
           {busy ? "Creating…" : "Sign up"}
