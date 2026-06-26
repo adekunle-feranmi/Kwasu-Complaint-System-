@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { LogoCrest } from "../common/UI";
+import PasswordInput from "./PasswordInput";
 
 export default function AdminAuth({ onSwitch }) {
   const { loginAdmin, registerAdmin } = useAuth();
@@ -43,8 +44,11 @@ export default function AdminAuth({ onSwitch }) {
         <input value={form.email} onChange={set("email")} placeholder="admin@kwasu.edu.ng"
                onKeyDown={(e) => e.key === "Enter" && submit()} />
         <label>Password</label>
-        <input type="password" value={form.password} onChange={set("password")} placeholder="••••••••"
-               onKeyDown={(e) => e.key === "Enter" && submit()} />
+        <PasswordInput
+          value={form.password}
+          onChange={set("password")}
+          onKeyDown={(e) => e.key === "Enter" && submit()}
+        />
         <label>Admin Code</label>
         <input value={form.admin_code} onChange={set("admin_code")} placeholder="required every time"
                onKeyDown={(e) => e.key === "Enter" && submit()} />
