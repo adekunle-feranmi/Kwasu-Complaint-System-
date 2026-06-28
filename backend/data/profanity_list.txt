@@ -1,4 +1,16 @@
 # KWASU abuse-detection wordlist (LDNOOBW)
+idiots
+nonsense
+rubbish
+trash
+garbage
+clown
+fraud
+thief
+moronic
+foolish
+incompetent
+useless
 idiot
 stupid
 fool
