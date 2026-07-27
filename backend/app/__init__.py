@@ -18,7 +18,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = cfg.DATABASE_URL
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     
-        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
         "pool_pre_ping": True,
         "pool_recycle": 280,
     }
