@@ -17,6 +17,11 @@ def create_app():
     app.config["ADMIN_REG_CODE"] = cfg.ADMIN_REG_CODE
     app.config["SQLALCHEMY_DATABASE_URI"] = cfg.DATABASE_URL
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    
+        app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_pre_ping": True,
+        "pool_recycle": 280,
+    }
 
     db.init_app(app)
     CORS(app, origins=cfg.CORS_ORIGINS, supports_credentials=True)
